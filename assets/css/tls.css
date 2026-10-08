@@ -1,0 +1,603 @@
+/* Mode 4: TLS. Messages are tape strips crossing between lanes. */
+
+[data-scene^='tls-'] .figure {
+  place-items: center stretch;
+}
+
+.ico {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: -0.12em;
+}
+
+.ico.brass {
+  color: var(--brass);
+}
+
+.ico.eve {
+  color: var(--eve);
+}
+
+.lock-slot {
+  display: inline-flex;
+  align-self: center;
+  margin-left: 0.2em;
+  font-size: 0.8em;
+}
+
+.formula .req {
+  font: 400 0.62em / 1 var(--font-typed);
+  background: var(--tape);
+  color: var(--tape-ink);
+  padding: 0.25em 0.45em 0.2em;
+  border-radius: 3px;
+  align-self: center;
+}
+
+.formula .answer [lang] {
+  font-size: 0.62em;
+}
+
+/* Keep the arrow with its answer so it never ends a line alone. */
+.formula .answer-pair {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.32em;
+  white-space: nowrap;
+}
+
+.chip.is-on {
+  background: var(--brass);
+  color: var(--bakelite);
+}
+
+/* ---------------------------------------------------------------- values */
+
+.tls-values td:first-child {
+  font-size: var(--text-md);
+}
+
+.tls-values td:nth-child(2) {
+  text-align: left;
+}
+
+.hex {
+  font: 400 var(--text-sm) / 1.2 var(--font-typed);
+  color: var(--ink-2);
+  letter-spacing: 0.01em;
+}
+
+.tls-values tr.is-now .hex {
+  color: var(--brass);
+}
+
+.tls-values tr.eve-now td,
+.tls-values tr.eve-now .hex {
+  color: var(--eve);
+}
+
+.ledger tr.is-ahead .hex,
+.ledger tr.is-ahead .mark,
+.ledger tr.is-ahead .verdict {
+  visibility: hidden;
+}
+
+.mark.eve-mark {
+  background: var(--eve);
+  border-color: var(--eve);
+}
+
+.gone {
+  font: 400 var(--text-sm) / 1.2 var(--font-typed);
+  color: var(--ink-3);
+  text-decoration: line-through;
+}
+
+.verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.verdict.ok {
+  color: var(--bob);
+}
+
+.verdict.eve {
+  color: var(--eve);
+}
+
+.tls-values .dim {
+  color: var(--ink-3);
+}
+
+.line.note {
+  font: 400 var(--text-xs) / 1.45 var(--font-typed);
+  white-space: normal;
+  max-width: 52ch;
+}
+
+/* ---------------------------------------------------------------- sequence */
+
+.seq {
+  --lane-w: 96px;
+  --eve-w: 56px;
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  justify-self: center;
+}
+
+.seq-head,
+.seq-row {
+  display: grid;
+  grid-template-columns: var(--lane-w) minmax(0, 1fr) var(--lane-w) var(--eve-w);
+  align-items: center;
+}
+
+.seq-head {
+  padding-bottom: var(--space-3);
+}
+
+.lane {
+  font: 600 var(--text-md) / 1 var(--font-engraved);
+  text-align: center;
+}
+
+.lane.alice {
+  grid-column: 1;
+}
+
+.lane.bob {
+  grid-column: 3;
+}
+
+.lane.eve {
+  grid-column: 4;
+}
+
+.seq-rows {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: var(--space-2) 0;
+}
+
+/* Lifelines: client, server, and Eve's tap. */
+.seq-rows::before,
+.seq-rows::after,
+.seq::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 0;
+}
+
+.seq-rows::before {
+  top: 0;
+  left: calc(var(--lane-w) / 2);
+  border-left: 1.5px solid var(--alice);
+}
+
+.seq-rows::after {
+  top: 0;
+  right: calc(var(--eve-w) + var(--lane-w) / 2);
+  border-left: 1.5px solid var(--bob);
+}
+
+.seq::after {
+  top: calc(var(--space-6) + 4px);
+  right: calc(var(--eve-w) / 2);
+  border-left: 1.5px dashed var(--eve);
+  opacity: 0.7;
+}
+
+.seq-row {
+  min-height: 44px;
+}
+
+.seq-row.is-ahead {
+  visibility: hidden;
+}
+
+.wire {
+  grid-column: 1 / 4;
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 36px;
+}
+
+.wire-line {
+  position: absolute;
+  left: calc(var(--lane-w) / 2);
+  right: calc(var(--lane-w) / 2);
+  top: 50%;
+  height: 0;
+  border-top: 1.5px solid var(--ink-3);
+}
+
+.dir-right .wire-line {
+  transform-origin: left center;
+}
+
+.dir-left .wire-line {
+  transform-origin: right center;
+}
+
+.dir-both .wire-line {
+  transform-origin: center;
+}
+
+.wire-line::before,
+.wire-line::after {
+  content: '';
+  position: absolute;
+  top: -5.5px;
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  display: none;
+}
+
+.dir-right .wire-line::after,
+.dir-both .wire-line::after {
+  display: block;
+  right: -2px;
+  border-left: 8px solid var(--ink-3);
+  border-right-width: 0;
+}
+
+.dir-left .wire-line::before,
+.dir-both .wire-line::before {
+  display: block;
+  left: -2px;
+  border-right: 8px solid var(--ink-3);
+  border-left-width: 0;
+}
+
+.seq-row.is-now .wire-line {
+  border-top-color: var(--brass);
+  border-top-width: 2px;
+}
+
+.seq-row.is-now .wire-line::after {
+  border-left-color: var(--brass);
+}
+
+.seq-row.is-now .wire-line::before {
+  border-right-color: var(--brass);
+}
+
+.pkt {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  max-width: calc(100% - var(--lane-w));
+  padding: 5px 10px 4px;
+  border-radius: 3px;
+  background: var(--tape);
+  color: var(--tape-ink);
+  font: 400 var(--text-sm) / 1.1 var(--font-typed);
+  white-space: nowrap;
+}
+
+.pkt-sub {
+  color: color-mix(in srgb, var(--tape-ink) 70%, transparent);
+  font-family: var(--font-math);
+}
+
+.pkt .ico {
+  width: 0.95em;
+  height: 0.95em;
+}
+
+.seq-row.is-now .pkt {
+  background: color-mix(in srgb, var(--brass) 34%, var(--tape));
+}
+
+.seq-row.is-done .pkt {
+  opacity: 0.82;
+}
+
+.seq-rec {
+  grid-column: 4;
+  justify-self: center;
+  position: relative;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.seq-rec.on {
+  background: var(--eve);
+}
+
+.seq-rec.on::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  width: calc(var(--eve-w) / 2 + var(--lane-w) / 2 - 4.5px);
+  border-top: 1px dashed var(--eve);
+  opacity: 0.6;
+}
+
+.seq-event {
+  display: block;
+  padding: var(--space-1) 0;
+}
+
+.seq-event-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font: 400 var(--text-sm) / 1.2 var(--font-typed);
+  color: var(--ink-2);
+  border: 1px dashed var(--enamel-line);
+  background: var(--enamel);
+  position: relative;
+  z-index: 1;
+}
+
+.seq-event.is-now .seq-event-body {
+  color: var(--brass);
+  border-color: var(--brass);
+  border-style: solid;
+}
+
+.seq-event.eve .seq-event-body {
+  color: var(--eve);
+  border-color: color-mix(in srgb, var(--eve) 60%, transparent);
+}
+
+.seq-event.eve.is-now .seq-event-body {
+  border-color: var(--eve);
+  border-style: solid;
+}
+
+/* ---------------------------------------------------------------- waiting */
+
+.tls-wait {
+  display: flex;
+  gap: 10px;
+  justify-self: center;
+  padding: var(--space-4) var(--space-5);
+  background: var(--tape);
+  border-radius: 3px;
+}
+
+.tls-wait .hole {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bakelite);
+  animation: punch 1.2s var(--ease-in-out) infinite;
+}
+
+.tls-wait .hole:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.tls-wait .hole:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes punch {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ---------------------------------------------------------------- interception */
+
+.topo {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(64px, 1fr) auto;
+  align-items: start;
+  width: 100%;
+  max-width: 720px;
+  justify-self: center;
+  padding: var(--space-7) 0;
+}
+
+.topo.has-proxy {
+  grid-template-columns: auto minmax(48px, 1fr) auto minmax(48px, 1fr) auto;
+}
+
+.node {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-3);
+}
+
+.disc {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--bakelite);
+  border: 3px solid currentColor;
+}
+
+.disc-letter {
+  font: 600 1.75rem / 1 var(--font-engraved);
+  color: var(--deck-ink);
+}
+
+.node-name {
+  font: 600 var(--text-md) / 1 var(--font-engraved);
+}
+
+.disc-mark {
+  position: absolute;
+  right: -8px;
+  top: -8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  background: var(--bob);
+  color: var(--bakelite);
+}
+
+.disc-mark.bad {
+  background: var(--eve);
+}
+
+.disc-mark .ico {
+  stroke-width: 3;
+}
+
+.tunnel {
+  position: relative;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  margin: 0 var(--space-2);
+}
+
+.tunnel-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 26px;
+  transform: translateY(-50%);
+  border-radius: 13px;
+  background: var(--bakelite);
+  box-shadow: inset 0 0 0 1px var(--enamel-line);
+}
+
+.tunnel.is-live .tunnel-band {
+  box-shadow: inset 0 0 0 2px var(--brass);
+}
+
+.tunnel.is-broken .tunnel-band,
+.tunnel.is-idle .tunnel-band {
+  opacity: 0.35;
+}
+
+.tunnel .pkt {
+  max-width: none;
+  font-size: var(--text-xs);
+  z-index: 1;
+}
+
+.proxy-slot {
+  position: relative;
+  display: grid;
+  justify-items: center;
+}
+
+.plain {
+  position: absolute;
+  top: calc(100% + var(--space-3));
+  font: 400 var(--text-sm) / 1 var(--font-typed);
+  color: var(--eve);
+  border: 1.5px solid var(--eve);
+  border-radius: 3px;
+  padding: 6px 9px 5px;
+  white-space: nowrap;
+}
+
+.warning {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font: 600 var(--text-md) / 1 var(--font-engraved);
+  color: var(--eve);
+}
+
+.warning .ico {
+  width: 1.3em;
+  height: 1.3em;
+}
+
+.try-list {
+  list-style: none;
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.tape-note {
+  width: fit-content;
+  max-width: 100%;
+  font: 400 var(--text-sm) / 1.35 var(--font-typed);
+  background: var(--tape);
+  color: var(--tape-ink);
+  padding: 7px 12px 6px;
+  border-radius: 3px;
+}
+
+@media (max-width: 900px) {
+  .seq {
+    --lane-w: 72px;
+    --eve-w: 40px;
+  }
+
+  .pkt {
+    font-size: var(--text-xs);
+    padding: 4px 7px 3px;
+  }
+
+  .seq-event-body {
+    font-size: var(--text-xs);
+  }
+
+  .disc {
+    width: 56px;
+    height: 56px;
+  }
+
+  .disc-letter {
+    font-size: 1.375rem;
+  }
+
+  .topo {
+    padding: var(--space-5) 0 var(--space-7);
+  }
+
+  .tunnel {
+    height: 56px;
+  }
+
+  .tunnel .pkt .pkt-name {
+    max-width: 8ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tls-wait .hole {
+    animation: none;
+    opacity: 0.8;
+  }
+}
