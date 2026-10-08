@@ -1,0 +1,239 @@
+/* Mode 2: RSA and ElGamal. Scoped to its scenes through the board's data-scene. */
+
+.board[data-scene^='rsa-'] .formula.compact {
+  font-size: var(--text-xl);
+  gap: 0.2em 0.3em;
+}
+
+.board[data-scene^='rsa-'] .rotor .jump.alice {
+  stroke: var(--alice);
+}
+
+.board[data-scene^='rsa-'] .rotor .jump.bob {
+  stroke: var(--bob);
+  opacity: 0.8;
+}
+
+.board[data-scene^='rsa-'] .rotor .jump.eve {
+  stroke: var(--eve);
+  opacity: 0.8;
+}
+
+.board[data-scene^='rsa-'] .rotor .jump.is-now.bob,
+.board[data-scene^='rsa-'] .rotor .jump.is-now.eve {
+  stroke-width: 2;
+  opacity: 1;
+}
+
+/* Key generation draws only the last few hops of e, each one countable. */
+.board[data-scene^='rsa-'] .rotor .jump.rsa-hop {
+  stroke: var(--ink-2);
+  stroke-width: 1.5;
+  opacity: 0.85;
+}
+
+.board[data-scene^='rsa-'] .rotor .peg.rsa-hop circle {
+  fill: var(--ink-2);
+}
+
+.board[data-scene^='rsa-'] .rotor .peg.is-now.bob circle {
+  fill: var(--bob);
+}
+
+.board[data-scene^='rsa-'] .rotor .peg.is-now.eve circle {
+  fill: var(--eve);
+}
+
+.board[data-scene^='rsa-'] .rotor .peg.is-now.alice circle {
+  fill: var(--alice);
+}
+
+/* ---------------------------------------------------------------- candidate exponents */
+
+.rsa-cands {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+
+.rsa-cand {
+  display: inline-grid;
+  justify-items: center;
+  row-gap: 2px;
+}
+
+.rsa-cand-e {
+  font: 400 var(--text-xl) / 1 var(--font-math);
+  padding: 0 0.1em;
+  background-image: linear-gradient(var(--eve), var(--eve));
+  background-repeat: no-repeat;
+  background-position: 0 55%;
+  background-size: 0% 2px;
+}
+
+.rsa-cand.struck .rsa-cand-e {
+  color: var(--ink-3);
+  background-size: 100% 2px;
+}
+
+.rsa-cand.ok .rsa-cand-e {
+  color: var(--brass);
+}
+
+.rsa-cand-g {
+  font: 500 var(--text-xs) / 1 var(--font-engraved);
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+}
+
+.rsa-cand.struck .rsa-cand-g {
+  color: var(--eve);
+}
+
+/* ---------------------------------------------------------------- area, square, rectangle figures */
+
+.rsa-area-wrap {
+  width: 100%;
+  max-width: 520px;
+  max-height: min(62vh, 560px);
+  display: grid;
+  place-items: center;
+}
+
+.rsa-area,
+.rsa-square {
+  width: 100%;
+  max-height: inherit;
+  overflow: visible;
+}
+
+.rsa-area-rect,
+.rsa-sq-n {
+  fill: color-mix(in srgb, var(--ink) 7%, transparent);
+  stroke: var(--ink-2);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.rsa-sq-n.is-now {
+  fill: color-mix(in srgb, var(--brass) 22%, transparent);
+  stroke: var(--brass);
+}
+
+.rsa-area-side {
+  font: 600 13px / 1 var(--font-engraved);
+  fill: var(--ink-2);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.rsa-area-n {
+  font-family: var(--font-math);
+  fill: var(--ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.rsa-corner {
+  fill: color-mix(in srgb, var(--enamel) 70%, transparent);
+  stroke: var(--ink-3);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+  transform-box: fill-box;
+  transform-origin: bottom right;
+}
+
+.rsa-corner.is-square {
+  fill: color-mix(in srgb, var(--brass) 35%, transparent);
+  stroke: var(--brass);
+  stroke-dasharray: none;
+  stroke-width: 2;
+}
+
+/* ---------------------------------------------------------------- several rotors */
+
+.rsa-pair,
+.rsa-trio {
+  width: 100%;
+  display: grid;
+  gap: var(--space-5);
+  align-items: start;
+}
+
+.rsa-pair {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.rsa-trio {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.rsa-cell {
+  display: grid;
+  justify-items: center;
+  row-gap: var(--space-2);
+  min-width: 0;
+}
+
+.rsa-cell .rotor {
+  width: 100%;
+}
+
+.rsa-cell-label {
+  margin: 0;
+  font: 400 var(--text-lg) / 1.2 var(--font-math);
+}
+
+/* ---------------------------------------------------------------- keys and scales */
+
+.rsa-key {
+  display: grid;
+  row-gap: var(--space-2);
+}
+
+.rsa-key-row {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-4);
+  font: 400 var(--text-lg) / 1.3 var(--font-math);
+}
+
+.rsa-key-row > .bi {
+  min-width: 5.5em;
+  font: 500 var(--text-sm) / 1 var(--font-engraved);
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+}
+
+.rsa-key-row.is-secret {
+  color: var(--brass);
+}
+
+.rsa-scale {
+  position: relative;
+  height: 10px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  overflow: hidden;
+}
+
+.rsa-scale-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--w) * 100%);
+  background: var(--brass);
+  transform-origin: left;
+}
+
+@media (max-width: 900px) {
+  .rsa-trio {
+    gap: var(--space-2);
+  }
+
+  .rsa-cell-label {
+    font-size: var(--text-sm);
+  }
+}
