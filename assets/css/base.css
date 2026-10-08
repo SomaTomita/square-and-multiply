@@ -1,0 +1,1309 @@
+/* Square & Multiply. World: rotor rim and punched tape. */
+
+:root {
+  color-scheme: dark;
+
+  --enamel: #2a3531;
+  --enamel-deep: #222b28;
+  --enamel-line: #3d4a45;
+  --bakelite: #141617;
+  --bakelite-edge: #24282a;
+  --ink: #ece4cf;
+  --ink-2: #b4b09f;
+  --ink-3: #a09f90;
+  --brass: #d2a54c;
+  --brass-deep: #9c7630;
+  --tape: #e6d8a2;
+  --tape-ink: #2b2720;
+  --tape-dim: #b9ad80;
+  --alice: #86b8de;
+  --bob: #71c4aa;
+  --eve: #f2806a;
+  --focus: #f0c86a;
+
+  /* The deck is always a bakelite bar, in both schemes. */
+  --deck-ink: #ece4cf;
+  --deck-dim: #87877a;
+  --deck-line: #3a4044;
+  --deck-brass: #d2a54c;
+
+  --font-math: 'STIX Two Text', 'Cambria Math', 'Times New Roman', serif;
+  --font-engraved: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-typed: 'Courier Prime', 'Courier New', monospace;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.375rem;
+  --text-xl: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem);
+  --text-xxl: clamp(2.125rem, 1.4rem + 2vw, 3rem);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+
+  --strip-h: 64px;
+  --scenes-h: 44px;
+  --deck-h: 116px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --enamel: #dfe4de;
+    --enamel-deep: #d2d8d1;
+    --enamel-line: #b9c2ba;
+    --bakelite: #1b1e1f;
+    --bakelite-edge: #2c3133;
+    --ink: #1c2320;
+    --ink-2: #4a5550;
+    --ink-3: #5a645e;
+    --brass: #74520c;
+    --brass-deep: #6b4b10;
+    --tape: #ecdfab;
+    --tape-ink: #26221b;
+    --tape-dim: #c2b582;
+    --alice: #245d8a;
+    --bob: #17735a;
+    --eve: #b4381c;
+    --focus: #74520c;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Text size switch: rem-based type scales, figures keep their geometry. */
+:root[data-size='s'] {
+  font-size: 87.5%;
+}
+
+:root[data-size='l'] {
+  font-size: 118.75%;
+}
+
+html,
+body {
+  margin: 0;
+  overflow-x: clip;
+}
+
+body {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: var(--strip-h) var(--scenes-h) minmax(0, 1fr) var(--deck-h);
+  background: var(--enamel);
+  color: var(--ink);
+  font: 400 var(--text-md) / 1.5 var(--font-math);
+  font-variant-numeric: lining-nums tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Per-language fallbacks: Latin keeps the world's faces, other scripts
+   fall through to a face that has their glyphs. */
+:root[data-lang='ja'] {
+  --font-math: 'STIX Two Text', 'BIZ UDPGothic', serif;
+  --font-engraved: 'Barlow Condensed', 'BIZ UDPGothic', sans-serif;
+  --font-typed: 'Courier Prime', 'BIZ UDGothic', monospace;
+}
+
+:root[data-lang='ko'] {
+  --font-math: 'STIX Two Text', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', serif;
+  --font-engraved: 'Barlow Condensed', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  --font-typed: 'Courier Prime', 'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', monospace;
+}
+
+:root[data-lang='zh'] {
+  --font-math: 'STIX Two Text', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', serif;
+  --font-engraved: 'Barlow Condensed', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  --font-typed: 'Courier Prime', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans SC', monospace;
+}
+
+:root[data-lang='hi'] {
+  --font-math: 'STIX Two Text', 'Noto Sans Devanagari', serif;
+  --font-engraved: 'Barlow Condensed', 'Noto Sans Devanagari', sans-serif;
+  --font-typed: 'Courier Prime', 'Noto Sans Devanagari', monospace;
+}
+
+:root[data-lang='el'] {
+  --font-engraved: 'Fira Sans Extra Condensed', 'Barlow Condensed', sans-serif;
+  --font-typed: 'Fira Mono', 'Courier Prime', monospace;
+}
+
+:root:is([data-lang='ja'], [data-lang='ko'], [data-lang='zh'], [data-lang='hi']) body {
+  line-height: 1.7;
+}
+
+::selection {
+  background: var(--brass);
+  color: var(--bakelite);
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+a {
+  color: inherit;
+}
+
+var {
+  font-style: italic;
+}
+
+sup,
+sub {
+  font-size: 0.62em;
+  line-height: 0;
+}
+
+/* ------------------------------------------------------------ strip */
+
+.strip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: 0 var(--space-6);
+  border-bottom: 1px solid var(--enamel-line);
+}
+
+.wordmark {
+  font: 600 1.375rem / 1 var(--font-engraved);
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.notches {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.mode {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: baseline;
+  column-gap: var(--space-2);
+  padding: 10px 14px 12px;
+  text-decoration: none;
+  color: var(--ink-3);
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: color var(--dur-short) var(--ease-out);
+}
+
+.mode-n {
+  font: 600 1.625rem / 1 var(--font-engraved);
+}
+
+.mode-name {
+  font: 500 var(--text-sm) / 1 var(--font-engraved);
+  letter-spacing: 0.02em;
+}
+
+.mode-short {
+  display: none;
+}
+
+.mode:hover {
+  color: var(--ink);
+}
+
+.mode.is-active {
+  color: var(--ink);
+}
+
+/* The brass index pin under the active notch. */
+.mode::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  width: 0;
+  height: 0;
+  border: 7px solid transparent;
+  border-bottom-color: var(--brass);
+  transform: translateX(-50%) scaleY(0);
+  transform-origin: bottom;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.mode.is-active::after {
+  transform: translateX(-50%) scaleY(1);
+}
+
+.sizes {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--enamel-line);
+  border-radius: 999px;
+  padding: 2px;
+}
+
+.sizes button {
+  width: 30px;
+  height: 28px;
+  border-radius: 999px;
+  font-family: var(--font-math);
+  line-height: 1;
+  color: var(--ink-3);
+}
+
+.sizes button:nth-child(1) {
+  font-size: 12px;
+}
+
+.sizes button:nth-child(2) {
+  font-size: 15px;
+}
+
+.sizes button:nth-child(3) {
+  font-size: 19px;
+}
+
+.sizes button[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--enamel);
+}
+
+.sizes button:not([aria-pressed='true']):hover {
+  color: var(--ink);
+}
+
+.lang {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 10px 0 9px;
+  border: 1px solid var(--enamel-line);
+  border-radius: 999px;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.lang:hover,
+.lang:focus-within {
+  color: var(--ink);
+  border-color: var(--ink-3);
+}
+
+.lang svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+}
+
+.lang select {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: 600 var(--text-sm) / 1 var(--font-engraved);
+  letter-spacing: 0.02em;
+  padding: 0 14px 0 0;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(-45deg, transparent 50%, currentColor 50%);
+  background-size: 4px 4px;
+  background-position: calc(100% - 6px) 55%, calc(100% - 2px) 55%;
+  background-repeat: no-repeat;
+}
+
+.lang select:focus-visible {
+  outline: none;
+}
+
+.lang:has(select:focus-visible) {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.lang option {
+  color: var(--ink);
+  background: var(--enamel);
+}
+
+.lang-code {
+  display: none;
+  font: 600 var(--text-sm) / 1 var(--font-engraved);
+  letter-spacing: 0.04em;
+}
+
+/* ------------------------------------------------------------ scenes */
+
+.scenes {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: 0 var(--space-6);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.scene-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: 500 var(--text-md) / 1 var(--font-engraved);
+  letter-spacing: 0.01em;
+  color: var(--ink-3);
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 6px 0;
+}
+
+/* State is a mark: a punched hole for the current topic, an outline otherwise. */
+.scene-link::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  flex: none;
+}
+
+.scene-link:hover {
+  color: var(--ink);
+}
+
+.scene-link.is-active {
+  color: var(--ink);
+}
+
+.scene-link.is-active::before {
+  background: var(--brass);
+  border-color: var(--brass);
+}
+
+/* ------------------------------------------------------------ board */
+
+.board {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    'formula figure'
+    'work figure';
+  column-gap: var(--space-7);
+  row-gap: var(--space-5);
+  padding: var(--space-6) var(--space-6) var(--space-5);
+  min-height: 0;
+}
+
+.canvas {
+  display: contents;
+}
+
+.formula {
+  grid-area: formula;
+  font: 400 var(--text-xxl) / 1.25 var(--font-math);
+  letter-spacing: -0.01em;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.18em 0.32em;
+  min-width: 0;
+}
+
+.formula .op {
+  color: var(--ink-3);
+}
+
+.formula .answer {
+  color: var(--brass);
+}
+
+.formula .answer.eve {
+  color: var(--eve);
+}
+
+.work {
+  grid-area: work;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--enamel-line) transparent;
+}
+
+.figure {
+  grid-area: figure;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.stage-error {
+  grid-column: 1 / -1;
+  align-self: start;
+  margin: 0;
+  font: 400 var(--text-lg) / 1.4 var(--font-math);
+  color: var(--eve);
+  max-width: 40ch;
+}
+
+/* ------------------------------------------------------------ scrub numbers */
+
+.scrub {
+  position: relative;
+  display: inline-block;
+  color: var(--brass);
+  cursor: ew-resize;
+  touch-action: none;
+  user-select: none;
+  border-radius: 4px;
+  padding: 0 0.06em;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 100% 2px;
+  background-position: 0 92%;
+  background-repeat: no-repeat;
+  transition: background-color var(--dur-micro) var(--ease-out);
+}
+
+.scrub::before {
+  content: '';
+  position: absolute;
+  inset: 12% -6px;
+  border-left: 2px dotted currentColor;
+  border-right: 2px dotted currentColor;
+  opacity: 0;
+  transition: opacity var(--dur-short) var(--ease-out);
+}
+
+.scrub:hover::before,
+.scrub.is-dragging::before {
+  opacity: 0.55;
+}
+
+.scrub.is-dragging {
+  background-color: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+.scrub.is-typing {
+  cursor: text;
+  user-select: text;
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.scrub.is-rejected {
+  animation: reject 0.5s var(--ease-out);
+}
+
+@keyframes reject {
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+.scrub.alice,
+.alice {
+  color: var(--alice);
+}
+
+.scrub.bob,
+.bob {
+  color: var(--bob);
+}
+
+.scrub.eve,
+.eve {
+  color: var(--eve);
+}
+
+/* Preset chips: typed tape labels. */
+.chip {
+  font: 400 var(--text-xs) / 1 var(--font-typed);
+  color: var(--tape-ink);
+  background: var(--tape);
+  border-radius: 3px;
+  padding: 7px 10px 6px;
+  white-space: nowrap;
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+}
+
+.chip:active {
+  transform: translateY(1px);
+}
+
+
+/* ------------------------------------------------------------ rotor */
+
+.rotor {
+  width: min(100%, calc(100dvh - var(--strip-h) - var(--scenes-h) - var(--deck-h) - 64px), 560px);
+  aspect-ratio: 1;
+  overflow: visible;
+}
+
+.rotor .rim-band {
+  fill: none;
+  stroke: var(--bakelite);
+  stroke-width: 26;
+}
+
+.rotor .rim-edge {
+  fill: none;
+  stroke: var(--bakelite-edge);
+  stroke-width: 1;
+}
+
+.rotor .face {
+  fill: var(--enamel-deep);
+}
+
+.rotor .tick {
+  stroke: var(--ink-3);
+  stroke-width: 0.8;
+}
+
+.rotor .engraved {
+  font: 600 8.5px / 1 var(--font-engraved);
+  fill: var(--deck-ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.rotor .engraved.is-mark {
+  fill: var(--brass);
+}
+
+.rotor .pin {
+  fill: var(--brass);
+}
+
+.rotor .window {
+  fill: var(--bakelite);
+  stroke: var(--brass-deep);
+  stroke-width: 1;
+}
+
+.rotor .window-text {
+  font: 600 15px / 1 var(--font-engraved);
+  fill: var(--deck-ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.rotor .turn {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+.rotor .jump {
+  fill: none;
+  stroke: var(--ink-2);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  opacity: 0.55;
+}
+
+.rotor .jump.is-now {
+  stroke: var(--brass);
+  stroke-width: 2;
+  opacity: 1;
+}
+
+.rotor .peg circle {
+  fill: var(--ink);
+  stroke: var(--enamel-deep);
+  stroke-width: 1.5;
+}
+
+.rotor .peg-inner {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.rotor .peg.alice circle {
+  fill: var(--alice);
+}
+
+.rotor .peg.bob circle {
+  fill: var(--bob);
+}
+
+.rotor .peg.eve circle {
+  fill: var(--eve);
+}
+
+.rotor .peg.is-now circle {
+  fill: var(--brass);
+}
+
+.rotor .peg-label {
+  font: 600 7.5px / 1 var(--font-engraved);
+  fill: var(--ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.rotor .target {
+  fill: none;
+  stroke: var(--ink-2);
+  stroke-width: 1.2;
+  stroke-dasharray: 2 2.5;
+}
+
+.rotor .target.hit {
+  stroke: var(--brass);
+  stroke-dasharray: none;
+  stroke-width: 2;
+}
+
+.rotor .hub {
+  fill: var(--bakelite);
+}
+
+.rotor .hub-text {
+  font: 400 11px / 1 var(--font-math);
+  fill: var(--deck-ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* ------------------------------------------------------------ working table */
+
+.ledger {
+  width: 100%;
+  max-width: 560px;
+  border-collapse: collapse;
+  font: 400 var(--text-lg) / 1.2 var(--font-math);
+}
+
+.ledger th {
+  font: 500 var(--text-sm) / 1 var(--font-engraved);
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+  text-align: right;
+  padding: 0 var(--space-3) var(--space-2);
+  border-bottom: 1px solid var(--enamel-line);
+}
+
+.ledger th sup {
+  font-size: 0.8em;
+}
+
+.ledger th:first-child,
+.ledger td:first-child {
+  text-align: left;
+  padding-left: 0;
+}
+
+.ledger td {
+  text-align: right;
+  padding: 7px var(--space-3);
+  border-bottom: 1px solid color-mix(in srgb, var(--enamel-line) 50%, transparent);
+  white-space: nowrap;
+}
+
+.ledger tr.is-now td {
+  color: var(--brass);
+}
+
+.ledger tr.is-ahead td {
+  color: transparent;
+}
+
+.ledger td.dim {
+  color: var(--ink-3);
+}
+
+.ledger td.used {
+  color: var(--brass);
+}
+
+.ledger .mark {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink-3);
+  vertical-align: middle;
+}
+
+.ledger .mark.on {
+  background: var(--brass);
+  border-color: var(--brass);
+}
+
+/* A worked line: lhs = rhs, used under formulas. */
+.line {
+  font: 400 var(--text-lg) / 1.35 var(--font-math);
+  margin: 0 0 var(--space-2);
+  white-space: nowrap;
+}
+
+.line .op {
+  color: var(--ink-3);
+}
+
+.line.is-now {
+  color: var(--brass);
+}
+
+/* Notes in words wrap; worked math lines stay on one line on wide screens. */
+.line.dim-line {
+  white-space: normal;
+}
+
+.big {
+  font: 400 var(--text-xl) / 1.2 var(--font-math);
+}
+
+.bits {
+  display: inline-flex;
+  gap: 0.12em;
+  font: 600 var(--text-xl) / 1 var(--font-engraved);
+}
+
+.bits .bit {
+  display: inline-block;
+  min-width: 0.62em;
+  text-align: center;
+  color: var(--ink-3);
+}
+
+.bits .bit.one {
+  color: var(--ink);
+}
+
+.bits .bit.is-now {
+  color: var(--brass);
+}
+
+/* ------------------------------------------------------------ deck: tape and lever */
+
+.deck {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-5);
+  padding: 0 var(--space-6) 0 0;
+  background: var(--bakelite);
+  color: var(--deck-ink);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.tape-window {
+  position: relative;
+  height: 84px;
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+}
+
+.tape {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--tape);
+  color: var(--tape-ink);
+  will-change: transform;
+  transition: transform 520ms var(--ease-out);
+}
+
+.frame {
+  position: relative;
+  flex: none;
+  width: 26px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  border-right: 1px dashed color-mix(in srgb, var(--tape-ink) 14%, transparent);
+}
+
+.frame-holes {
+  display: grid;
+  grid-template-rows: repeat(6, 6px);
+  gap: 3px;
+  align-content: center;
+}
+
+.hole {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.hole.punched {
+  background: var(--bakelite);
+}
+
+.hole.sprocket {
+  width: 3px;
+  height: 3px;
+  margin: 1.5px;
+  background: var(--bakelite);
+}
+
+.frame.is-ahead .hole.punched {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tape-ink) 16%, transparent);
+}
+
+.frame.is-now {
+  width: auto;
+  min-width: 26px;
+  max-width: min(84ch, 66vw);
+  padding: 0 var(--space-5) 0 var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  cursor: default;
+  background: color-mix(in srgb, var(--brass) 26%, var(--tape));
+}
+
+.frame.is-now::before,
+.frame.is-now::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  transform: translateX(-50%);
+}
+
+.frame.is-now::before {
+  top: 0;
+  border-top-color: var(--bakelite);
+}
+
+.frame.is-now::after {
+  bottom: 0;
+  border-bottom-color: var(--bakelite);
+}
+
+.caption {
+  font: 400 var(--text-md) / 1.3 var(--font-typed);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* Scripts with taller glyphs read better a step smaller on the tape. */
+:root:is([data-lang='ja'], [data-lang='ko'], [data-lang='zh'], [data-lang='hi']) .caption {
+  font-size: var(--text-sm);
+}
+
+.caption var {
+  font-family: var(--font-math);
+  font-size: 1.08em;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.controls .back,
+.controls .play {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--deck-line);
+  transition: transform var(--dur-micro) var(--ease-out), border-color var(--dur-short) var(--ease-out);
+}
+
+.controls .back:not(:disabled):hover,
+.controls .play:not(:disabled):hover {
+  border-color: var(--deck-dim);
+}
+
+.controls .back:not(:disabled):active,
+.controls .play:not(:disabled):active {
+  transform: scale(0.94);
+}
+
+.controls svg {
+  width: 20px;
+  height: 20px;
+}
+
+.controls .back path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.controls .play path {
+  fill: currentColor;
+}
+
+.controls .play .i-pause,
+.controls .play.is-playing .i-play {
+  display: none;
+}
+
+.controls .play.is-playing .i-pause {
+  display: inline;
+}
+
+.lever {
+  width: 64px;
+  height: 84px;
+  display: grid;
+  place-items: center;
+}
+
+.lever svg {
+  width: 52px;
+  height: 70px;
+  overflow: visible;
+}
+
+.lever-slot {
+  fill: var(--bakelite-edge);
+  stroke: var(--deck-line);
+}
+
+.lever-arm {
+  fill: var(--deck-brass);
+  transform-box: view-box;
+  transform-origin: 24px 56px;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.lever:not(:disabled):hover .lever-arm {
+  transform: rotate(8deg);
+}
+
+.lever.is-pulled .lever-arm {
+  animation: pull 420ms var(--ease-in-out);
+}
+
+@keyframes pull {
+  45% {
+    transform: rotate(38deg) translateY(4px);
+  }
+}
+
+.count {
+  min-width: 4.5ch;
+  font: 600 var(--text-md) / 1 var(--font-engraved);
+  color: var(--deck-dim);
+  text-align: right;
+}
+
+/* ------------------------------------------------------------ responsive */
+
+@media (min-width: 901px) {
+  body {
+    height: 100dvh;
+  }
+}
+
+/* iPad landscape and small laptops. */
+@media (min-width: 901px) and (max-width: 1240px) {
+  .strip {
+    gap: var(--space-4);
+    padding: 0 var(--space-5);
+  }
+
+  .mode {
+    padding: 10px 10px 12px;
+  }
+
+  .mode:not(.is-active) .mode-name {
+    display: none;
+  }
+
+  .scenes {
+    padding: 0 var(--space-5);
+    gap: var(--space-4);
+  }
+
+  .board {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: var(--space-6);
+    padding: var(--space-5) var(--space-5) var(--space-4);
+  }
+}
+
+@media (pointer: coarse) {
+  .scene-link {
+    padding: 12px 0;
+  }
+
+  .chip {
+    padding: 10px 12px 9px;
+  }
+
+  .scrub {
+    padding: 0 0.12em;
+  }
+}
+
+@media (max-width: 900px) {
+  :root {
+    --deck-h: 92px;
+  }
+
+  body {
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+  }
+
+  .strip {
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+    padding: var(--space-3) var(--space-4) 0;
+  }
+
+  .wordmark {
+    font-size: 1.125rem;
+  }
+
+  .notches {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .lang {
+    margin-left: auto;
+  }
+
+  .mode {
+    padding: 10px 6px 12px;
+    grid-template-columns: auto;
+    justify-items: center;
+    row-gap: 4px;
+  }
+
+  .mode-name {
+    font-size: 0.75rem;
+  }
+
+  .scenes {
+    padding: var(--space-2) var(--space-4);
+    gap: var(--space-4);
+  }
+
+  .board {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      'formula'
+      'figure'
+      'work';
+    padding: var(--space-4) var(--space-4) var(--space-6);
+    row-gap: var(--space-4);
+  }
+
+  .formula {
+    font-size: var(--text-xl);
+  }
+
+  .work {
+    overflow: visible;
+  }
+
+  .rotor {
+    width: min(100%, 520px, 62dvh);
+  }
+
+  .deck {
+    position: sticky;
+    bottom: 0;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: var(--space-2) 0 var(--space-2);
+  }
+
+  .controls {
+    gap: var(--space-3);
+    justify-content: flex-end;
+    padding: 0 var(--space-4);
+  }
+
+  .controls .back,
+  .controls .play {
+    width: 36px;
+    height: 36px;
+  }
+
+  .count {
+    margin-right: auto;
+    order: -1;
+    text-align: left;
+  }
+
+  .lever {
+    width: 44px;
+    height: 48px;
+  }
+
+  .lever svg {
+    width: 30px;
+    height: 42px;
+  }
+
+  .frame.is-now {
+    max-width: 86vw;
+  }
+
+  .tape-window {
+    height: 96px;
+  }
+
+  .caption {
+    font-size: var(--text-sm);
+    -webkit-line-clamp: 4;
+  }
+
+  .ledger {
+    font-size: var(--text-md);
+  }
+}
+
+@media (max-width: 600px) {
+  .ledger td,
+  .ledger th {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    padding-left: var(--space-2);
+    padding-right: var(--space-2);
+  }
+
+  .ledger td:first-child,
+  .ledger th {
+    overflow-wrap: normal;
+  }
+
+  .line {
+    white-space: normal;
+  }
+
+  /* Keep the working table next to the rotor; examples move below it. */
+  .work {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .work > .presets {
+    order: 10;
+    margin: var(--space-4) 0 0;
+  }
+
+  .rotor {
+    width: min(100%, 300px, 32dvh);
+  }
+
+  .work {
+    overflow-x: auto;
+  }
+
+  .mode {
+    min-width: 44px;
+  }
+
+  /* The language menu shows its code on phones; the full names open on tap. */
+  .lang-code {
+    display: inline;
+    padding-right: 12px;
+  }
+
+  .lang select {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    opacity: 0;
+  }
+
+  .lang {
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(-45deg, transparent 50%, currentColor 50%);
+    background-size: 4px 4px;
+    background-position: calc(100% - 12px) 55%, calc(100% - 8px) 55%;
+    background-repeat: no-repeat;
+  }
+
+  .ledger tr {
+    scroll-margin-bottom: 170px;
+  }
+
+  .sizes button {
+    width: 26px;
+  }
+
+  .formula {
+    font-size: var(--text-lg);
+  }
+
+  .mode-name {
+    display: none;
+  }
+
+  .mode-short {
+    display: block;
+    font: 500 0.6875rem / 1 var(--font-engraved);
+    letter-spacing: 0.01em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    animation-duration: 1ms !important;
+  }
+}

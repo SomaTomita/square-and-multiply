@@ -1,0 +1,351 @@
+/* Figures and working parts shared across modes, and mode 1 specifics. */
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-5);
+}
+
+.work > * + * {
+  margin-top: var(--space-4);
+}
+
+.work > .presets + * {
+  margin-top: 0;
+}
+
+.line.dim-line {
+  color: var(--ink-3);
+  font-size: var(--text-md);
+}
+
+.line.big {
+  margin-top: var(--space-4);
+}
+
+.fn-gap {
+  width: 0.8em;
+}
+
+/* ---------------------------------------------------------------- pow */
+
+.pow-bits {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3em;
+}
+
+.pow-bits sub {
+  font-size: 0.7em;
+  color: var(--ink-3);
+}
+
+.pow-lines .line {
+  margin: 0 0 var(--space-1);
+}
+
+/* ---------------------------------------------------------------- Euclid tiling */
+
+.tiling-wrap {
+  width: 100%;
+  height: 100%;
+  max-height: min(62vh, 560px);
+  display: grid;
+  place-items: center;
+}
+
+.tiling {
+  width: 100%;
+  height: 100%;
+  max-height: inherit;
+  overflow: visible;
+}
+
+.tile-frame {
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 4 4;
+}
+
+.tile {
+  fill: color-mix(in srgb, var(--ink) 6%, transparent);
+  stroke: var(--ink-3);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.tile-step.is-now .tile {
+  fill: color-mix(in srgb, var(--brass) 26%, transparent);
+  stroke: var(--brass);
+  stroke-width: 1.6;
+}
+
+.tile-label {
+  font-family: var(--font-engraved);
+  font-weight: 600;
+  fill: var(--ink-2);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.tile-step.is-now .tile-label {
+  fill: var(--brass);
+}
+
+/* ---------------------------------------------------------------- CRT */
+
+.formula .system {
+  display: grid;
+  gap: 0.08em;
+  padding-left: 0.5em;
+  border-left: 2px solid var(--ink-3);
+  font-size: var(--text-xl);
+}
+
+.formula .congruence {
+  display: flex;
+  align-items: baseline;
+  gap: 0.28em;
+}
+
+.formula .system-answer {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3em;
+  align-self: center;
+  margin-left: 0.4em;
+}
+
+.candidates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6em;
+}
+
+.cand.is-hit {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 5px;
+}
+
+/* ---------------------------------------------------------------- phi grid */
+
+.grid-wrap {
+  width: 100%;
+  max-width: min(100%, 560px);
+  max-height: min(64vh, 560px);
+  display: grid;
+  place-items: center;
+}
+
+.grid-fig {
+  width: 100%;
+  max-height: inherit;
+}
+
+.cell {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.cell rect {
+  fill: var(--ink);
+  fill-opacity: 0.1;
+  stroke: none;
+}
+
+.cell .cell-n {
+  font-family: var(--font-engraved);
+  font-weight: 600;
+  fill: var(--ink);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.cell.struck rect {
+  fill-opacity: 0.02;
+}
+
+.cell.struck .cell-n {
+  fill: var(--ink-3);
+  opacity: 0.45;
+}
+
+.cell.is-now rect {
+  fill: var(--eve);
+  fill-opacity: 0.18;
+}
+
+.cell.kept rect {
+  fill: var(--brass);
+  fill-opacity: 0.32;
+}
+
+.cell.kept .cell-n {
+  fill: var(--ink);
+}
+
+.cell.max-order rect {
+  stroke: var(--brass);
+  stroke-width: 0.6;
+}
+
+.factor-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+}
+
+.factor-line .factor {
+  color: var(--ink-2);
+}
+
+.factor-line .factor + .factor::before {
+  content: '·';
+  color: var(--ink-3);
+  margin-right: 0.35em;
+}
+
+.factor-line .factor.done {
+  color: var(--ink);
+}
+
+.factor-line .factor.is-now {
+  color: var(--eve);
+}
+
+.orders {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 96px;
+  padding-bottom: 22px;
+  position: relative;
+}
+
+.order-bar {
+  position: relative;
+  flex: 1 1 0;
+  max-width: 36px;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.order-fill {
+  display: block;
+  width: 100%;
+  height: calc(var(--h) * 100%);
+  background: color-mix(in srgb, var(--ink) 28%, transparent);
+  border-radius: 2px 2px 0 0;
+  transform-origin: bottom;
+}
+
+.order-bar.is-max .order-fill {
+  background: var(--brass);
+}
+
+.order-k {
+  position: absolute;
+  left: 50%;
+  bottom: -22px;
+  transform: translateX(-50%);
+  font: 600 var(--text-sm) / 1 var(--font-engraved);
+  color: var(--ink-3);
+}
+
+.order-bar.is-max .order-k {
+  color: var(--brass);
+}
+
+/* ---------------------------------------------------------------- Miller–Rabin */
+
+.halving {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35em;
+}
+
+.halving .op {
+  font-size: 0.7em;
+}
+
+.halving .is-hit {
+  color: var(--brass);
+}
+
+/* ---------------------------------------------------------------- birthday curve */
+
+.curve-wrap {
+  width: 100%;
+  max-width: 620px;
+}
+
+.curve {
+  width: 100%;
+  overflow: visible;
+}
+
+.curve .axis {
+  stroke: var(--ink-3);
+  stroke-width: 1;
+}
+
+.curve .axis-label {
+  font: 600 9px / 1 var(--font-engraved);
+  fill: var(--ink-3);
+  dominant-baseline: central;
+}
+
+.curve .axis-label.end {
+  text-anchor: end;
+}
+
+.curve .axis-label.mid {
+  text-anchor: middle;
+}
+
+.curve .curve-line {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.curve .half {
+  opacity: 0;
+}
+
+.curve .half.is-on {
+  opacity: 1;
+}
+
+.curve .half-line {
+  stroke: var(--brass);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 3;
+}
+
+.curve .half .axis-label {
+  fill: var(--brass);
+}
+
+.curve .marker circle {
+  fill: var(--alice);
+}
+
+.curve .marker-stem {
+  stroke: var(--alice);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+
+.curve .marker {
+  transform-box: fill-box;
+}
